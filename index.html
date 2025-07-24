@@ -1,1 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>録画アプリ「録画くん」使い方ガイド</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Helvetica Neue", Arial, Meiryo, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #d9534f;
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        section {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        h2 {
+            font-size: 1.8rem;
+            color: #d9534f;
+            border-bottom: 3px solid #f0a3a1;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        h3 {
+            font-size: 1.4rem;
+            color: #333;
+            border-left: 5px solid #d9534f;
+            padding-left: 0.8rem;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.8rem;
+        }
+        code {
+            background-color: #eee;
+            color: #d63384;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+        .button-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            transition: background-color 0.3s;
+        }
+        .button-link:hover {
+            background-color: #0056b3;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffe69c;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .kids-guide {
+            background-color: #e0f2f1;
+            border: 2px dashed #00796b;
+            border-radius: 10px;
+        }
+        .kids-guide h2 {
+            color: #00796b;
+            border-bottom-color: #80cbc4;
+        }
+        .kids-guide h3 {
+            border-left-color: #00796b;
+        }
+        .license {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #777;
+            padding-bottom: 2rem;
+        }
+        .license pre {
+            font-size: 0.7rem;
+            text-align: left;
+            white-space: pre-wrap;
+            background: #eee;
+            padding: 1em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
 
+    <header class="header">
+        <h1>録画アプリ「録画くん」</h1>
+        <p>かんたん操作で動画を録画し、Google ドライブに自動で整理・保存！</p>
+    </header>
+
+    <main class="container">
+        <section>
+            <h2>はじめに</h2>
+            <p>「録画くん」は、パソコンのカメラとマイクを使って動画を録画し、そのデータをGoogleドライブとスプレッドシートに自動で整理・保存するためのツールです。授業での発表、音読、実験の記録、オンラインでの面談など、さまざまな場面でご活用ください。</p>
+            <h3>主な機能</h3>
+            <ul>
+                <li><strong>かんたん録画:</strong> Webブラウザ上でボタンを押すだけで録画が開始・停止できます。</li>
+                <li><strong>カメラ・画質の選択:</strong> PCに接続されたカメラや、録画の画質（低/中/高）を選択できます。</li>
+                <li><strong>自動整理・保存:</strong> 録画した動画は、指定したGoogleドライブのフォルダに自動で保存されます。</li>
+                <li><strong>履歴管理:</strong> いつ、誰が、どの動画を保存したかがスプレッドシートに自動で記録され、リンクからすぐに動画を確認できます。</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>【先生向け】準備と設定ガイド</h2>
+            <p>子どもたちが利用する前に、先生がアプリのセットアップを行います。所要時間は約5分です。</p>
+
+            <h3>ステップ1：テンプレートをコピーする</h3>
+            <p>下のボタンをクリックして、ご自身のGoogleアカウントに「録画くん」のテンプレート（スプレッドシート）をコピーします。</p>
+            <a href="https://docs.google.com/spreadsheets/d/1wZzRjXW4mGv_hFhO7tY5NnKjA8lPqC9D2jW4gX_sYbE/copy" target="_blank" class="button-link">「録画くん」テンプレートをコピー</a>
+            <p>コピー後、ファイル名は「1年1組 録画くん」のように、分かりやすい名前に変更することをおすすめします。</p>
+
+            <h3>ステップ2：アプリを「デプロイ」してURLを取得する</h3>
+            <p>アプリをインターネット上に公開し、子どもたちがアクセスできるURLを発行します。<strong>この手順が最も重要です。</strong></p>
+            <ol>
+                <li>スプレッドシートの上部メニューから<code>拡張機能</code> → <code>Apps Script</code> をクリックします。</li>
+                <li>スクリプトエディタが新しいタブで開きます。画面右上の青い<code>デプロイ</code>ボタンをクリックし、<code>新しいデプロイ</code>を選択します。</li>
+                <li>歯車のアイコンの横にある<code>種類の選択</code>をクリックし、<code>ウェブアプリ</code>を選択します。</li>
+                <li>以下の通りに設定してください。
+                    <ul>
+                        <li><strong>説明:</strong> (空欄でもOK)</li>
+                        <li><strong>次のユーザーとしてアプリを実行:</strong> <strong>「自分」</strong> を選択</li>
+                        <li><strong>アクセスできるユーザー:</strong> <strong>「全員」</strong> を選択</li>
+                    </ul>
+                </li>
+                 <div class="note">
+                    <strong>「アクセスできるユーザー」について</strong><br>
+                    「全員」を選択すると、Googleアカウントを持っていないユーザーでもURLを知っていればアクセスできます。学校のポリシーに応じて「Google Workspace アカウントを持つすべてのユーザー」などに変更することも可能ですが、最も簡単に利用できるのは「全員」です。
+                </div>
+                <li>青い<code>デプロイ</code>ボタンをクリックします。</li>
+            </ol>
+
+            <h3>ステップ3：権限を承認する</h3>
+            <p>デプロイの途中で、プログラムが動作するための権限を承認します。</p>
+            <ol>
+                <li>「承認が必要です」という表示が出たら<code>アクセスを承認</code>をクリックします。</li>
+                <li>ご自身のGoogleアカウントを選択します。</li>
+                <li>「このアプリは Google で確認されていません」という警告画面が出たら、左下の<code>詳細</code>をクリックし、<code>（安全でないページ）に移動</code>をクリックします。<br>（これは自作のプログラムを動かす際の標準的な表示です。ご安心ください。）</li>
+                <li>最後に<code>許可</code>をクリックして、権限の承認は完了です。</li>
+            </ol>
+
+            <h3>ステップ4：子どもたちにアプリのURLを共有する</h3>
+            <ol>
+                <li>権限を承認すると、「デプロイが更新されました」という画面が表示されます。</li>
+                <li>そこに表示されている<strong>「ウェブアプリのURL」</strong>の横にある<code>コピー</code>ボタンをクリックします。<strong>このURLが、子どもたちに共有するための正しいリンクです。</strong></li>
+                <li>コピーしたURLを、Google Classroomやチャット、QRコードなどで子どもたちに共有してください。</li>
+                <li>最後に<code>完了</code>ボタンを押して、デプロイ作業を終了します。</li>
+            </ol>
+            
+            <h3>ステップ5：保存先フォルダを設定する（推奨）</h3>
+            <p>録画した動画を自動でフォルダ分けするために、スプレッドシートの<code>シート1</code>を開き、セル<code>B1</code>にフォルダ名（例：「国語の音読」）を入力します。活動ごとにここを書き換えることで、動画が混ざらずに管理できます。</p>
+
+        </section>
+
+        <section class="kids-guide">
+            <h2>【子どもたち・生徒向け】ろくがくん のつかいかた 👦👧</h2>
+            <p>せんせいから おしえられた URLを ひらいて、さっそく つかってみよう！</p>
+            <h3>ステップ1：じゅんび</h3>
+            <ol>
+                <li><strong>なまえを いれる:</strong> <code>グループ名/なまえ</code>のらんに、じぶんのなまえや グループのなまえを いれてね。</li>
+                <li><strong>カメラを えらぶ:</strong> もし カメラが ふたついじょう あったら、つかいたい カメラを えらぼう。</li>
+                <li><strong>がしつを えらぶ:</strong> ふつうは <code>中画質</code> のままで だいじょうぶ！</li>
+            </ol>
+            <h3>ステップ2：ろくが する</h3>
+            <ol>
+                <li><strong><code>録画開始</code>ボタンを おす:</strong> さいしょに「カメラとマイクをつかうことを きょかしますか？」と きかれたら、「きょか」を えらんでね。</li>
+                <li><strong>はっぴょう する:</strong> <code>録画中...</code>と でたら、ろくがが スタート！ カメラにむかって はっぴょうしよう。</li>
+                <li><strong><code>停止</code>ボタンを おす:</strong> はっぴょうが おわったら、このボタンで ろくがを とめてね。</li>
+            </ol>
+            <h3>ステップ3：ほぞん する</h3>
+            <ol>
+                <li><strong>かくにん する:</strong> さっき とった どうがが がめんで みられるよ。うまく とれているか チェック！</li>
+                <li><strong><code>ドライブに保存</code>ボタンを おす:</strong> うまく とれていたら、このボタンを おして ほぞんしよう。</li>
+                <li><strong>かんりょう！:</strong> <code>保存しました</code>と いう もじが でたら せいこう！せんせいの パソコンに どうがが とどいたよ。</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>【先生向け】録画データの確認方法</h2>
+            <h3>方法1：Googleドライブで確認する</h3>
+            <p>あなたのGoogleドライブに<strong>「録画くん保存フォルダ」</strong>が自動で作成されます。その中のフォルダ（B1セルで指定したもの）に、動画ファイル（.webm形式）が直接保存されています。</p>
+            <h3>方法2：スプレッドシートの「履歴」で確認する（おすすめ）</h3>
+            <p>「録画くん」のスプレッドシートを開くと、<strong>「履歴」</strong>というシートが自動で作成されています。このシートを見れば、誰がいつ何を録画したかが一目瞭然で、リンクからすぐに動画を確認できるため大変便利です。</p>
+            <ul>
+                <li><strong>フォルダパス:</strong> クリックすると、動画が保存されているGoogleドライブのフォルダに直接ジャンプできます。</li>
+                <li><strong>ファイルリンク:</strong> クリックすると、動画そのものを直接再生・ダウンロードできます。</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>よくある質問（FAQ）</h2>
+            <dl>
+                <dt><strong>Q. 「このアプリは Google で確認されていません」と表示されます。</strong></dt>
+                <dd>A. Googleが審査していない自作のプログラムを初めて実行する際に表示される標準的な警告です。作者（あなた自身）が信頼できるプログラムなので、手順に従って「詳細」→「安全でないページに移動」と進んで承認してください。</dd>
+                <br>
+                <dt><strong>Q. カメラやマイクが映りません（許可を求められません）。</strong></dt>
+                <dd>A. ブラウザのアドレスバーの左にある鍵マークをクリックし、サイトの設定でカメラとマイクが「許可」になっているか確認してください。一度「ブロック」してしまうと、手動で許可し直す必要があります。</dd>
+                <br>
+                <dt><strong>Q. 子どもに教えるURLを忘れてしまいました。</strong></dt>
+                <dd>A. スクリプトエディタの<code>デプロイ</code>ボタン → <code>デプロイを管理</code> をクリックすると、現在有効なデプロイの情報が表示され、そこからURLを再度コピーできます。</dd>
+                 <br>
+                <dt><strong>Q. プログラムを修正した場合、URLは変わりますか？</strong></dt>
+                <dd>A. いいえ、URLは同じまま使えます。プログラムを修正した後は、<code>デプロイ</code>ボタン → <code>デプロイを管理</code> をクリックし、現在のデプロイの右にある鉛筆マーク（編集）を押してから、バージョンを「新バージョン」にして再度デプロイしてください。これで同じURLのまま中身だけが新しくなります。</dd>
+            </dl>
+        </section>
+
+        <footer class="license">
+            <p>このソフトウェアは、MITライセンスのもとで公開されています。</p>
+            <details>
+                <summary>ライセンス詳細</summary>
+                <pre>
+MIT License
+
+Copyright (c) 2024 Masaaki Maeta
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                </pre>
+            </details>
+        </footer>
+    </main>
+
+</body>
+</html>
