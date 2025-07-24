@@ -101,6 +101,34 @@
         .kids-guide h3 {
             border-left-color: #00796b;
         }
+        /* ▼▼▼ 音声ガイド用のスタイルを追加 ▼▼▼ */
+        .audio-guide {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .audio-guide h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+            color: #0050b3;
+            display: flex;
+            align-items: center;
+        }
+        .audio-guide h4 .icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .audio-guide p {
+            margin: 0 0 1rem 0;
+            font-size: 0.95rem;
+        }
+        .audio-guide audio {
+            width: 100%;
+            border-radius: 50px;
+        }
+        /* ▲▲▲ ここまで ▲▲▲ */
         .license {
             text-align: center;
             font-size: 0.9rem;
@@ -127,6 +155,17 @@
     <main class="container">
         <section>
             <h2>はじめに</h2>
+
+            <!-- ▼▼▼ ここに音声ガイドプレイヤーを追加しました ▼▼▼ -->
+            <div class="audio-guide">
+                <h4><span class="icon">🔊</span> 音声ガイド</h4>
+                <p>このページの説明を音声で聞くことができます。</p>
+                <audio controls src="https://raw.githubusercontent.com/JohnnyMaeta/rokuga_kun/d560613208a9bb3c19dea067675a04484ee5733c/%E9%8C%B2%E7%94%BB%E3%81%8F%E3%82%93.m4a">
+                    お使いのブラウザは音声の再生に対応していません。
+                </audio>
+            </div>
+            <!-- ▲▲▲ ここまで ▲▲▲ -->
+
             <p>「録画くん」は、パソコンのカメラとマイクを使って動画を録画し、そのデータをGoogleドライブとスプレッドシートに自動で整理・保存するためのツールです。授業での発表、音読、実験の記録、オンラインでの面談など、さまざまな場面でご活用ください。</p>
             <h3>主な機能</h3>
             <ul>
@@ -143,7 +182,6 @@
 
             <h3>ステップ1：テンプレートをコピーする</h3>
             <p>下のボタンをクリックして、ご自身のGoogleアカウントに「録画くん」のテンプレート（スプレッドシート）をコピーします。</p>
-            <!-- ▼▼▼ ここのリンクをご指摘の通り修正しました ▼▼▼ -->
             <a href="https://bit.ly/rokugakun" target="_blank" class="button-link">「録画くん」テンプレートをコピー</a>
             <p>コピー後、ファイル名は「1年1組 録画くん」のように、分かりやすい名前に変更することをおすすめします。</p>
 
