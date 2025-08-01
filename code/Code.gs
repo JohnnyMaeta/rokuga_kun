@@ -37,7 +37,7 @@ const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
 const SUBFOLDER_SHEET_NAME = "シート1";
 const SUBFOLDER_CELL = "B1";
 const HISTORY_SHEET_NAME = "履歴";
-const HISTORY_HEADERS = ["ファイル名", "保存日時", "フォルダパス", "ファイルリンク"];
+const HISTORY_HEADERS = ["ファイル名", "保存日時", "フォルダパス", "ファイルリンク", "ファイル形式"];
 
 function doGet(e) {
   createHistorySheetIfNotExists();
@@ -84,38 +84,57 @@ function createHistorySheetIfNotExists() {
     sheet.setColumnWidth(2, 150);
     sheet.setColumnWidth(3, 250);
     sheet.setColumnWidth(4, 300);
+    sheet.setColumnWidth(5, 100); // ファイル形式列の幅
+  } else {
+    // 既存のシートに「ファイル形式」列がない場合は追加
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    if (!headers.includes("ファイル形式")) {
+      sheet.getRange(1, headers.length + 1).setValue("ファイル形式");
+      sheet.getRange(1, headers.length + 1).setFontWeight("bold");
+      sheet.setColumnWidth(headers.length + 1, 100);
+    }
   }
   return sheet;
 }
 
-function addRecordToHistorySheet(fileName, folderPathText, folderUrl, fileUrl) {
+function addRecordToHistorySheet(fileName, folderPathText, folderUrl, fileUrl, fileFormat) {
   try {
     const sheet = createHistorySheetIfNotExists();
     const timestamp = new Date();
     const formattedTimestamp = Utilities.formatDate(timestamp, Session.getScriptTimeZone(), "yyyy/MM/dd HH:mm:ss");
     const folderLinkFormula = `=HYPERLINK("${folderUrl}","${folderPathText}")`;
     const fileLinkFormula = `=HYPERLINK("${fileUrl}","${fileName}")`;
-    sheet.appendRow([fileName, formattedTimestamp, folderLinkFormula, fileLinkFormula]);
+    sheet.appendRow([fileName, formattedTimestamp, folderLinkFormula, fileLinkFormula, fileFormat.toUpperCase()]);
   } catch (e) {
     Logger.log(`履歴シートへの記録エラー: ${e.toString()}`);
   }
 }
 
 /**
- * Base64エンコードされた動画データをデコードし、WebMファイルとして保存します。
- * @param {string} videoDataUrl - "data:video/webm;base64,..." の形式の動画データURL。
+ * Base64エンコードされた動画データをデコードし、MP4またはWebMファイルとして保存します。
+ * @param {string} videoDataUrl - "data:video/webm;base64,..." または "data:video/mp4;base64,..." の形式の動画データURL。
  * @param {string} baseFileName - 保存するファイルのベース名 (拡張子なし)。
+ * @param {string} extension - ファイル拡張子 ("mp4" または "webm")。
+ * @param {string} mimeType - ファイルのMIMEタイプ。
  * @return {Object} 保存処理の結果。
  */
-function saveVideoFile(videoDataUrl, baseFileName) {
+function saveVideoFile(videoDataUrl, baseFileName, extension = 'webm', mimeType = 'video/webm') {
   try {
     if (!videoDataUrl || !baseFileName) {
       throw new Error("動画データまたはファイル名が無効です。");
     }
+    
+    // 拡張子の検証
+    const validExtensions = ['mp4', 'webm'];
+    if (!validExtensions.includes(extension.toLowerCase())) {
+      extension = 'webm'; // デフォルトはWebM
+    }
+    
     const parentFolderId = getOrCreateFolderIdByName(PARENT_FOLDER_NAME);
     const parentFolder = DriveApp.getFolderById(parentFolderId);
     let targetFolder, folderPathText, targetFolderUrl;
     const subFolderNameRaw = getSubFolderNameFromSheet();
+    
     if (subFolderNameRaw) {
       const subFolderId = getOrCreateFolderIdByName(subFolderNameRaw, parentFolder);
       targetFolder = DriveApp.getFolderById(subFolderId);
@@ -126,20 +145,27 @@ function saveVideoFile(videoDataUrl, baseFileName) {
       folderPathText = parentFolder.getName();
       targetFolderUrl = parentFolder.getUrl();
     }
+    
     const parts = videoDataUrl.match(/^data:(.+?);base64,(.+)$/);
     if (!parts) throw new Error("無効なData URL形式です。");
-    const mimeType = parts[1];
+    
+    // Data URLから取得したMIMEタイプを使用（パラメータで渡されたものを優先）
+    const detectedMimeType = parts[1];
     const base64Data = parts[2];
     
-    const finalFileName = `${baseFileName}.webm`;
+    // ファイル名の生成
+    const finalFileName = `${baseFileName}.${extension.toLowerCase()}`;
 
     const decodedData = Utilities.base64Decode(base64Data);
-    const blob = Utilities.newBlob(decodedData, mimeType, finalFileName);
+    const blob = Utilities.newBlob(decodedData, mimeType || detectedMimeType, finalFileName);
     const file = targetFolder.createFile(blob);
-    addRecordToHistorySheet(finalFileName, folderPathText, targetFolderUrl, file.getUrl());
+    
+    // 履歴に記録（ファイル形式も含む）
+    addRecordToHistorySheet(finalFileName, folderPathText, targetFolderUrl, file.getUrl(), extension);
+    
     return {
       success: true,
-      message: `ファイル "${finalFileName}" をドライブのフォルダ「${folderPathText}」に保存しました。`
+      message: `ファイル "${finalFileName}" (${extension.toUpperCase()}形式) をドライブのフォルダ「${folderPathText}」に保存しました。`
     };
   } catch (error) {
     Logger.log(`saveVideoFileでエラーが発生しました: ${error.toString()}`);
