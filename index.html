@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>録画アプリ「録画くん」使い方ガイド</title>
+    <title>録画アプリ「録画くん」使い方ガイド（MP4対応版）</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Helvetica Neue", Arial, Meiryo, sans-serif;
@@ -27,6 +27,16 @@
             margin: 0.5rem 0 0;
             font-size: 1.1rem;
             opacity: 0.9;
+        }
+        .new-badge {
+            display: inline-block;
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
         }
         .container {
             max-width: 800px;
@@ -89,6 +99,13 @@
             margin: 1rem 0;
             border-radius: 4px;
         }
+        .update-note {
+            background-color: #e3f2fd;
+            border-left: 5px solid #64b5f6;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
         .kids-guide {
             background-color: #e0f2f1;
             border: 2px dashed #00796b;
@@ -101,7 +118,6 @@
         .kids-guide h3 {
             border-left-color: #00796b;
         }
-        /* ▼▼▼ 音声ガイド用のスタイルを追加 ▼▼▼ */
         .audio-guide {
             background-color: #e6f7ff;
             border: 1px solid #91d5ff;
@@ -128,7 +144,6 @@
             width: 100%;
             border-radius: 50px;
         }
-        /* ▲▲▲ ここまで ▲▲▲ */
         .license {
             text-align: center;
             font-size: 0.9rem;
@@ -143,12 +158,26 @@
             padding: 1em;
             border-radius: 4px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <h1>録画アプリ「録画くん」</h1>
+        <h1>録画アプリ「録画くん」<span class="new-badge">MP4対応</span></h1>
         <p>かんたん操作で動画を録画し、Google ドライブに自動で整理・保存！</p>
     </header>
 
@@ -156,7 +185,6 @@
         <section>
             <h2>はじめに</h2>
 
-            <!-- ▼▼▼ ここに音声ガイドプレイヤーを追加しました ▼▼▼ -->
             <div class="audio-guide">
                 <h4><span class="icon">🔊</span> 音声ガイド</h4>
                 <p>このページの説明を音声で聞くことができます。</p>
@@ -164,15 +192,20 @@
                     お使いのブラウザは音声の再生に対応していません。
                 </audio>
             </div>
-            <!-- ▲▲▲ ここまで ▲▲▲ -->
+
+            <div class="update-note">
+                <strong>🎉 新機能：MP4形式での保存に対応しました！</strong><br>
+                お使いのブラウザがMP4録画をサポートしている場合、より高い圧縮効率でファイルを保存できます。
+            </div>
 
             <p>「録画くん」は、パソコンのカメラとマイクを使って動画を録画し、そのデータをGoogleドライブとスプレッドシートに自動で整理・保存するためのツールです。授業での発表、音読、実験の記録、オンラインでの面談など、さまざまな場面でご活用ください。</p>
             <h3>主な機能</h3>
             <ul>
                 <li><strong>かんたん録画:</strong> Webブラウザ上でボタンを押すだけで録画が開始・停止できます。</li>
                 <li><strong>カメラ・画質の選択:</strong> PCに接続されたカメラや、録画の画質（低/中/高）を選択できます。</li>
+                <li><strong>ファイル形式の選択:</strong> <span class="new-badge">NEW</span> MP4またはWebM形式から選択できます（ブラウザのサポート状況により自動調整）。</li>
                 <li><strong>自動整理・保存:</strong> 録画した動画は、指定したGoogleドライブのフォルダに自動で保存されます。</li>
-                <li><strong>履歴管理:</strong> いつ、誰が、どの動画を保存したかがスプレッドシートに自動で記録され、リンクからすぐに動画を確認できます。</li>
+                <li><strong>履歴管理:</strong> いつ、誰が、どの動画を、どの形式で保存したかがスプレッドシートに自動で記録され、リンクからすぐに動画を確認できます。</li>
             </ul>
         </section>
 
@@ -235,6 +268,7 @@
                 <li><strong>なまえを いれる:</strong> <code>グループ名/なまえ</code>のらんに、じぶんのなまえや グループのなまえを いれてね。</li>
                 <li><strong>カメラを えらぶ:</strong> もし カメラが ふたついじょう あったら、つかいたい カメラを えらぼう。</li>
                 <li><strong>がしつを えらぶ:</strong> ふつうは <code>中画質</code> のままで だいじょうぶ！</li>
+                <li><strong>ファイルけいしきを えらぶ:</strong> <span class="new-badge">NEW</span> ふつうは <code>MP4</code> のままで だいじょうぶ！</li>
             </ol>
             <h3>ステップ2：ろくが する</h3>
             <ol>
@@ -253,13 +287,58 @@
         <section>
             <h2>【先生向け】録画データの確認方法</h2>
             <h3>方法1：Googleドライブで確認する</h3>
-            <p>あなたのGoogleドライブに<strong>「録画くん保存フォルダ」</strong>が自動で作成されます。その中のフォルダ（B1セルで指定したもの）に、動画ファイル（.webm形式）が直接保存されています。</p>
+            <p>あなたのGoogleドライブに<strong>「録画くん保存フォルダ」</strong>が自動で作成されます。その中のフォルダ（B1セルで指定したもの）に、動画ファイル（.mp4または.webm形式）が直接保存されています。</p>
+            
             <h3>方法2：スプレッドシートの「履歴」で確認する（おすすめ）</h3>
             <p>「録画くん」のスプレッドシートを開くと、<strong>「履歴」</strong>というシートが自動で作成されています。このシートを見れば、誰がいつ何を録画したかが一目瞭然で、リンクからすぐに動画を確認できるため大変便利です。</p>
+            
+            <div class="update-note">
+                <strong>新機能：</strong> 履歴シートに「ファイル形式」列が追加され、MP4またはWebMのどちらで保存されたかが分かるようになりました。
+            </div>
+            
             <ul>
                 <li><strong>フォルダパス:</strong> クリックすると、動画が保存されているGoogleドライブのフォルダに直接ジャンプできます。</li>
                 <li><strong>ファイルリンク:</strong> クリックすると、動画そのものを直接再生・ダウンロードできます。</li>
+                <li><strong>ファイル形式:</strong> <span class="new-badge">NEW</span> MP4またはWEBMが表示され、どの形式で保存されたかが分かります。</li>
             </ul>
+        </section>
+
+        <section>
+            <h2>ブラウザ別の対応状況</h2>
+            <p>MP4形式での録画は、お使いのブラウザによってサポート状況が異なります。</p>
+            <table>
+                <tr>
+                    <th>ブラウザ</th>
+                    <th>MP4録画</th>
+                    <th>WebM録画</th>
+                    <th>推奨度</th>
+                </tr>
+                <tr>
+                    <td>Google Chrome</td>
+                    <td>◎ 対応</td>
+                    <td>◎ 対応</td>
+                    <td>★★★</td>
+                </tr>
+                <tr>
+                    <td>Microsoft Edge</td>
+                    <td>◎ 対応</td>
+                    <td>◎ 対応</td>
+                    <td>★★★</td>
+                </tr>
+                <tr>
+                    <td>Mozilla Firefox</td>
+                    <td>△ 一部対応</td>
+                    <td>◎ 対応</td>
+                    <td>★★</td>
+                </tr>
+                <tr>
+                    <td>Safari</td>
+                    <td>× 非対応</td>
+                    <td>◎ 対応</td>
+                    <td>★</td>
+                </tr>
+            </table>
+            <p>MP4が使えない環境では、自動的にWebM形式で録画されます。どちらの形式でも問題なく再生・保存できます。</p>
         </section>
 
         <section>
@@ -270,6 +349,9 @@
                 <br>
                 <dt><strong>Q. カメラやマイクが映りません（許可を求められません）。</strong></dt>
                 <dd>A. ブラウザのアドレスバーの左にある鍵マークをクリックし、サイトの設定でカメラとマイクが「許可」になっているか確認してください。一度「ブロック」してしまうと、手動で許可し直す必要があります。</dd>
+                <br>
+                <dt><strong>Q. MP4で保存したいのにWebMになってしまいます。</strong></dt>
+                <dd>A. お使いのブラウザがMP4録画をサポートしていない可能性があります。ChromeまたはEdgeの最新版をお使いください。WebM形式でも問題なく再生できますのでご安心ください。</dd>
                 <br>
                 <dt><strong>Q. 子どもに教えるURLを忘れてしまいました。</strong></dt>
                 <dd>A. スクリプトエディタの<code>デプロイ</code>ボタン → <code>デプロイを管理</code> をクリックすると、現在有効なデプロイの情報が表示され、そこからURLを再度コピーできます。</dd>
