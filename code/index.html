@@ -4,7 +4,6 @@
   <base target="_top">
   <title>動画録画アプリ (画質・カメラ切替対応)</title>
   <style>
-    /* CSSは変更なし */
     body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
     .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 640px; margin: auto;}
     h1 { color: #d9534f; text-align: center; }
@@ -19,6 +18,7 @@
     button:hover { background-color: #c9302c; }
     button:disabled { background-color: #cccccc; cursor: not-allowed; }
     #status { margin-top: 15px; padding: 10px; background-color: #e9ecef; border-radius: 5px; text-align: center; font-weight: bold; min-height: 20px; line-height: 1.5; }
+    .format-info { font-size: 12px; color: #666; margin-top: 5px; font-style: italic; }
   </style>
 </head>
 <body>
@@ -34,7 +34,6 @@
       <select id="cameraSelect"></select>
     </div>
     
-    <!-- ▼▼▼ 画質選択用のUIを追加 ▼▼▼ -->
     <div class="input-group">
       <label for="qualitySelect">画質:</label>
       <select id="qualitySelect">
@@ -43,7 +42,16 @@
         <option value="high">高画質 (1080p)</option>
       </select>
     </div>
-    <!-- ▲▲▲ ここまで ▲▲▲ -->
+
+    <!-- ファイル形式選択を追加 -->
+    <div class="input-group">
+      <label for="formatSelect">ファイル形式:</label>
+      <select id="formatSelect">
+        <option value="mp4">MP4 (推奨)</option>
+        <option value="webm">WebM</option>
+      </select>
+      <div class="format-info" id="formatInfo"></div>
+    </div>
 
     <div class="input-group">
       <label for="prefixName">グループ名/ペア名 (ファイル名の先頭に付きます):</label>
@@ -69,114 +77,263 @@
     const prefixNameInput = document.getElementById('prefixName');
     const cameraSelect = document.getElementById('cameraSelect');
     const cameraSelectorContainer = document.getElementById('cameraSelectorContainer');
-    
-    // ▼▼▼ 画質選択UIの要素とプリセットを定義 ▼▼▼
     const qualitySelect = document.getElementById('qualitySelect');
+    const formatSelect = document.getElementById('formatSelect');
+    const formatInfo = document.getElementById('formatInfo');
+    
     const QUALITY_PRESETS = {
       low: {
         width: { ideal: 640 },
         height: { ideal: 480 },
-        videoBitsPerSecond: 500000, // 500 kbps
+        videoBitsPerSecond: 500000,
       },
       medium: {
         width: { ideal: 1280 },
         height: { ideal: 720 },
-        videoBitsPerSecond: 2000000, // 2 Mbps
+        videoBitsPerSecond: 2000000,
       },
       high: {
         width: { ideal: 1920 },
         height: { ideal: 1080 },
-        videoBitsPerSecond: 4500000, // 4.5 Mbps
+        videoBitsPerSecond: 4500000,
       }
     };
-    // ▲▲▲ ここまで ▲▲▲
 
     let mediaRecorder, videoChunks = [], originalVideoBlob = null, stream = null;
+    let actualMimeType = ''; // 実際に使用されるMIMEタイプを記録
 
-    // カメラ選択肢の生成 (変更なし)
-    async function setupCameraSelector() { /* ... 変更なし ... */ }
+    // サポートされているMIMEタイプをチェック
+    function getSupportedMimeTypes() {
+      const types = [
+        'video/mp4',
+        'video/mp4;codecs=h264',
+        'video/mp4;codecs=h264,aac',
+        'video/webm',
+        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp9,opus'
+      ];
+      
+      const supported = {};
+      types.forEach(type => {
+        if (MediaRecorder.isTypeSupported(type)) {
+          const baseType = type.split(';')[0];
+          if (!supported[baseType] || type.includes('codecs')) {
+            supported[baseType] = type;
+          }
+        }
+      });
+      
+      return supported;
+    }
+
+    // フォーマット選択の更新
+    function updateFormatSelector() {
+      const supported = getSupportedMimeTypes();
+      const mp4Supported = 'video/mp4' in supported;
+      const webmSupported = 'video/webm' in supported;
+      
+      formatSelect.innerHTML = '';
+      
+      if (mp4Supported) {
+        const mp4Option = document.createElement('option');
+        mp4Option.value = 'mp4';
+        mp4Option.text = 'MP4 (推奨)';
+        formatSelect.appendChild(mp4Option);
+      }
+      
+      if (webmSupported) {
+        const webmOption = document.createElement('option');
+        webmOption.value = 'webm';
+        webmOption.text = 'WebM';
+        formatSelect.appendChild(webmOption);
+      }
+      
+      // MP4がサポートされていない場合の情報表示
+      if (!mp4Supported && webmSupported) {
+        formatInfo.textContent = 'このブラウザではMP4録画がサポートされていません。WebM形式で録画されます。';
+        formatSelect.value = 'webm';
+      } else if (mp4Supported) {
+        formatInfo.textContent = 'MP4形式で録画可能です。';
+      }
+    }
+
+    // カメラ選択肢の生成
+    async function setupCameraSelector() {
+      try {
+        // まず仮のストリームを取得してデバイス情報へのアクセス権を得る
+        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        tempStream.getTracks().forEach(track => track.stop());
+        
+        // デバイス一覧を取得
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        
+        cameraSelect.innerHTML = '';
+        
+        if (videoDevices.length > 0) {
+          videoDevices.forEach((device, index) => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.text = device.label || `カメラ ${index + 1}`;
+            cameraSelect.appendChild(option);
+          });
+          
+          // カメラが複数ある場合のみ選択UIを表示
+          if (videoDevices.length > 1) {
+            cameraSelectorContainer.style.display = 'block';
+          } else {
+            cameraSelectorContainer.style.display = 'none';
+          }
+        }
+        
+        statusDisplay.textContent = '準備完了。録画を開始できます。';
+      } catch (err) {
+        console.error('カメラデバイスの取得エラー:', err);
+        statusDisplay.textContent = 'カメラへのアクセスが拒否されました。ブラウザの設定を確認してください。';
+      }
+    }
 
     // 録画開始処理
     recordButton.onclick = async () => {
       try {
-        // ▼▼▼ 選択された画質プリセットを取得 ▼▼▼
         const selectedQuality = qualitySelect.value;
+        const selectedFormat = formatSelect.value;
         const preset = QUALITY_PRESETS[selectedQuality];
+        const supported = getSupportedMimeTypes();
+        
+        // 選択された形式のMIMEタイプを決定
+        let mimeType;
+        if (selectedFormat === 'mp4' && supported['video/mp4']) {
+          mimeType = supported['video/mp4'];
+          actualMimeType = 'video/mp4';
+        } else if (supported['video/webm']) {
+          mimeType = supported['video/webm'];
+          actualMimeType = 'video/webm';
+          if (selectedFormat === 'mp4') {
+            statusDisplay.textContent = 'MP4がサポートされていないため、WebM形式で録画します。';
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        } else {
+          throw new Error('録画可能な形式がサポートされていません。');
+        }
         
         const videoConstraints = {
           width: preset.width,
           height: preset.height
         };
+        
         if (cameraSelect.value) {
           videoConstraints.deviceId = { exact: cameraSelect.value };
         }
-        stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true });
         
-        // ▼▼▼ MediaRecorderにビットレートを設定 ▼▼▼
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: videoConstraints, 
+          audio: true 
+        });
+        
         const mediaRecorderOptions = {
-          mimeType: 'video/webm',
+          mimeType: mimeType,
           videoBitsPerSecond: preset.videoBitsPerSecond
         };
-        mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
-        // ▲▲▲ ここまで ▲▲▲
+        
+        try {
+          mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
+        } catch (e) {
+          // フォールバック: オプションなしで試す
+          console.warn('指定されたオプションでMediaRecorderを作成できませんでした。デフォルト設定を使用します。');
+          mediaRecorder = new MediaRecorder(stream);
+          actualMimeType = mediaRecorder.mimeType.split(';')[0];
+        }
         
         previewVideo.srcObject = stream;
         previewVideo.style.display = 'block';
         videoPlayback.style.display = 'none';
-        mediaRecorder.ondataavailable = event => videoChunks.push(event.data);
+        
+        mediaRecorder.ondataavailable = event => {
+          if (event.data.size > 0) {
+            videoChunks.push(event.data);
+          }
+        };
+        
         mediaRecorder.onstop = () => {
-          originalVideoBlob = new Blob(videoChunks, { type: mediaRecorder.mimeType });
+          originalVideoBlob = new Blob(videoChunks, { type: actualMimeType });
           videoPlayback.src = URL.createObjectURL(originalVideoBlob);
           previewVideo.style.display = 'none';
           videoPlayback.style.display = 'block';
-          // UIの状態更新
+          
           recordButton.disabled = false;
           stopButton.disabled = true;
           saveButton.disabled = false;
           prefixNameInput.disabled = false;
           cameraSelect.disabled = false;
-          qualitySelect.disabled = false; // ★追加
-          statusDisplay.textContent = '録画停止。再生または保存が可能です。';
+          qualitySelect.disabled = false;
+          formatSelect.disabled = false;
+          
+          const formatName = actualMimeType.includes('mp4') ? 'MP4' : 'WebM';
+          statusDisplay.textContent = `録画停止（${formatName}形式）。再生または保存が可能です。`;
+          
           videoChunks = [];
         };
+        
         videoChunks = [];
         mediaRecorder.start();
-        statusDisplay.textContent = '録画中...';
-        // UIの状態更新
+        
+        const formatName = actualMimeType.includes('mp4') ? 'MP4' : 'WebM';
+        statusDisplay.textContent = `録画中...（${formatName}形式）`;
+        
         recordButton.disabled = true;
         stopButton.disabled = false;
         saveButton.disabled = true;
         prefixNameInput.disabled = true;
         cameraSelect.disabled = true;
-        qualitySelect.disabled = true; // ★追加
+        qualitySelect.disabled = true;
+        formatSelect.disabled = true;
+        
       } catch (err) {
         statusDisplay.textContent = 'エラー: カメラ/マイクにアクセスできませんでした。';
         console.error(err);
       }
     };
 
-    // 録画停止処理 (変更なし)
-    stopButton.onclick = () => { /* ... 変更なし ... */ };
+    // 録画停止処理
+    stopButton.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          stream = null;
+        }
+        previewVideo.srcObject = null;
+      }
+    };
 
-    // 保存処理 (UIの状態更新に qualitySelect を追加)
+    // 保存処理
     saveButton.onclick = () => {
       if (!originalVideoBlob) {
         statusDisplay.textContent = '保存する録画データがありません。';
         return;
       }
+      
       statusDisplay.textContent = 'ドライブに保存中... しばらくお待ちください。';
       recordButton.disabled = true;
       saveButton.disabled = true;
       prefixNameInput.disabled = true;
       cameraSelect.disabled = true;
-      qualitySelect.disabled = true; // ★追加
+      qualitySelect.disabled = true;
+      formatSelect.disabled = true;
 
       const reader = new FileReader();
       reader.readAsDataURL(originalVideoBlob);
+      
       reader.onloadend = () => {
         const dataUrl = reader.result;
         const userPrefix = prefixNameInput.value.trim().replace(/[\s\\\/:\*\?"<>\|]/g, '_') || "unknown";
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        
+        // 実際のMIMEタイプに基づいて拡張子を決定
+        const extension = actualMimeType.includes('mp4') ? 'mp4' : 'webm';
         const baseFileName = `${userPrefix}_recording-${timestamp}`;
 
         google.script.run
@@ -191,7 +348,8 @@
             recordButton.disabled = false;
             prefixNameInput.disabled = false;
             cameraSelect.disabled = false;
-            qualitySelect.disabled = false; // ★追加
+            qualitySelect.disabled = false;
+            formatSelect.disabled = false;
           })
           .withFailureHandler(error => {
             statusDisplay.textContent = `サーバーエラー: ${error.message}`;
@@ -199,26 +357,58 @@
             saveButton.disabled = false;
             prefixNameInput.disabled = false;
             cameraSelect.disabled = false;
-            qualitySelect.disabled = false; // ★追加
+            qualitySelect.disabled = false;
+            formatSelect.disabled = false;
           })
-          .saveVideoFile(dataUrl, baseFileName);
+          .saveVideoFile(dataUrl, baseFileName, extension, actualMimeType);
       };
+      
       reader.onerror = () => {
         statusDisplay.textContent = 'ファイルの読み込みに失敗しました。';
         recordButton.disabled = false;
         saveButton.disabled = false;
         prefixNameInput.disabled = false;
         cameraSelect.disabled = false;
-        qualitySelect.disabled = false; // ★追加
+        qualitySelect.disabled = false;
+        formatSelect.disabled = false;
+      };
+    };
+
+    // カメラ切り替え時の処理
+    cameraSelect.onchange = async () => {
+      // 録画中でない場合のみプレビューを更新
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        try {
+          // 既存のストリームを停止
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            previewVideo.srcObject = null;
+          }
+          
+          // 新しいカメラでストリームを開始
+          const videoConstraints = {
+            deviceId: { exact: cameraSelect.value }
+          };
+          
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            video: videoConstraints, 
+            audio: true 
+          });
+          
+          previewVideo.srcObject = stream;
+          statusDisplay.textContent = 'カメラを切り替えました。';
+        } catch (err) {
+          console.error('カメラ切り替えエラー:', err);
+          statusDisplay.textContent = 'カメラの切り替えに失敗しました。';
+        }
       }
     };
-    
-    // 変更がない関数のコード（短縮表示）
-    setupCameraSelector = async () => { try { const devices = await navigator.mediaDevices.enumerateDevices(); const videoDevices = devices.filter(d => d.kind === 'videoinput'); cameraSelect.innerHTML = ''; if (videoDevices.length > 1) { videoDevices.forEach(d => { const o = document.createElement('option'); o.value = d.deviceId; o.text = d.label || `カメラ ${cameraSelect.length + 1}`; cameraSelect.appendChild(o); }); cameraSelectorContainer.style.display = 'block'; } else { cameraSelectorContainer.style.display = 'none'; } } catch (e) { console.error(e); } };
-    stopButton.onclick = () => { if (mediaRecorder?.state !== "inactive") { mediaRecorder.stop(); stream?.getTracks().forEach(t => t.stop()); stream = null; previewVideo.srcObject = null; } };
 
-    // ページ読み込み時にカメラのリストアップを実行
-    window.addEventListener('load', setupCameraSelector);
+    // ページ読み込み時の初期化
+    window.addEventListener('load', () => {
+      setupCameraSelector();
+      updateFormatSelector();
+    });
   </script>
 </body>
 </html>
